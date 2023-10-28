@@ -4,6 +4,7 @@ import GlobalStyles from '../styles/globalStyle';
 import useDark from '../hook/useDark';
 import styled from '@emotion/styled';
 import Footer from '../components/Footer';
+import versionData from '../../data/versions.json';
 
 const Main = styled.main`
     display: flex;
@@ -66,15 +67,10 @@ export default function Home() {
     const [userOS, setUserOS] = useState(initialUserOS);
 
     useEffect(() => {
-        fetch('/data/versions.json')
-          .then(response => response.json())
-          .then(data => {
-            if (data.current) {
-              setCurrentData(data.previous_versions[data.current]);
-            }
-          })
-          .catch(error => console.error('Error:', error));
-      }, []);
+        if (versionData.current) {
+          setCurrentData(versionData.previous_versions[versionData.current]);
+        }
+      }, []);    
 
       useEffect(() => {
         if (currentData) {
