@@ -11,6 +11,10 @@ const Nav = styled.nav`
     z-index:999;
     overflow:hidden;
     width:100%;
+
+    @media screen and (max-width: 550px){
+        padding:1.5rem 1rem;
+    }
 `
 
 const Title = styled.a`

@@ -9,7 +9,7 @@ const Main = styled.main`
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 90vh;
+    height: 85vh;
 `;
 
 const Section = styled.section`
@@ -59,17 +59,34 @@ const WinICO = styled.div`
 export default function Home() {
     const dark = useDark();
     const [theme, setTheme] = useState(dark);
+    const [currentData, setCurrentData] = useState(null);
+    const [download, setDownload] = useState('')
     const initialUserOS = window.navigator.platform;
   
     const [userOS, setUserOS] = useState(initialUserOS);
 
-    function downloadLink() {
-        if (userOS === "Win32") {
-          window.location.href = 'https://github.com/evairx/hours-booster/releases/download/v0.4.0/HoursBooster-0.4.0-Setup.exe';
-        } else if (userOS === "Linux") {
-          window.location.href = 'https://github.com/evairx/hours-booster/releases/download/v0.4.0/HoursBooster-0.4.0.AppImage'
+    useEffect(() => {
+        fetch('/data/versions.json')
+          .then(response => response.json())
+          .then(data => {
+            if (data.current) {
+              setCurrentData(data.previous_versions[data.current]);
+            }
+          })
+          .catch(error => console.error('Error:', error));
+      }, []);
+
+      useEffect(() => {
+        if (currentData) {
+          const detectOs = currentData.filter(info => info.type === userOS);
+          setDownload(detectOs.map(info => info.link));
         }
-      }
+      }, [currentData]);
+
+
+    function downloadLink() {
+        window.location.href = download;
+    }
     
     useEffect(() => {
         setTheme(dark);
@@ -106,8 +123,6 @@ export default function Home() {
         cursor: not-allowed;
     `
 
-
-
     return (
         <>
             <GlobalStyles theme={theme}/>
@@ -119,7 +134,7 @@ export default function Home() {
                     
                     {userOS === 'Win32' ? (
                         <div className='contentBtn'>
-                            <Download onClick={downloadLink}><WinICO/> Download For Window</Download>
+                            <Download onClick={downloadLink}><WinICO/> Download For Windows</Download>
                          </div>
                     ) : userOS === 'Linux' ? (
                         <div className='contentBtn'>
